@@ -1,6 +1,7 @@
 const BORDER_COLOR = '#fff';
 const BALL_COLOR = '#fff';
 const BALL_SIZE = 14;
+const BALL_RADIUS = BALL_SIZE / 2;
 const BRICK_COLOR = '#deb887';
 const BRICK_THICKNESS = 25;
 const BRICK_WIDTH = 120;
@@ -18,9 +19,12 @@ const brickStartPos = midHeightPlayground - BRICK_WIDTH / 2;
 const keys = {};
 
 const gameState = {
+  played: false,
   ball: {
     x: midWidthPlayground,
     y: midHeightPlayground,
+    dx: 5,
+    dy: -5,
     pos: midHeightPlayground,
     color: BALL_COLOR,
     speed: 2,
@@ -61,7 +65,27 @@ function handleMove(player, move) {
   player.pos = player.y + BRICK_WIDTH / 2;
 }
 
-function ballMove() {}
+function ballMove() {
+  if (gameState.played) {
+    if (
+      ball.x + ball.dx > canvas.width - BALL_RADIUS ||
+      ball.x + ball.dx < BALL_RADIUS
+    ) {
+      ball.dx = -ball.dx;
+      // win
+    }
+    if (
+      ball.y + ball.dy > canvas.height - BALL_RADIUS ||
+      ball.y + ball.dy < BALL_RADIUS
+    ) {
+      ball.dy = -ball.dy;
+      //верх, низ
+    }
+
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+  }
+}
 
 function aiMove() {
   if (secondPlayer.pos < ball.pos) {
@@ -129,6 +153,7 @@ function drawBall() {
   ctx.arc(ball.x, ball.y, BALL_SIZE, 0, TWO_PI);
   ctx.fillStyle = ball.color;
   ctx.fill();
+  ctx.closePath();
 }
 
 function gameLoop() {
@@ -136,6 +161,8 @@ function gameLoop() {
   draw();
   requestAnimationFrame(gameLoop);
 }
+
+gameState.played = true;
 
 document.addEventListener('keydown', e => (keys[e.key] = true));
 document.addEventListener('keyup', e => (keys[e.key] = false));
