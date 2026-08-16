@@ -5,7 +5,7 @@ const BALL_RADIUS = BALL_SIZE / 2;
 const BRICK_COLOR = '#deb887';
 const BRICK_THICKNESS = 25;
 const BRICK_WIDTH = 120;
-const BRICK_SPEED = 8;
+const BRICK_SPEED = 5;
 const WIN_SCORE = 10;
 const TWO_PI = Math.PI * 2;
 
@@ -121,9 +121,9 @@ function aiMove() {
     return;
   }
 
-  if (secondPlayer.pos < ball.pos) {
+  if (secondPlayer.pos < ball.pos - 8) {
     handleMove(secondPlayer, 'ArrowDown');
-  } else if (secondPlayer.pos > ball.pos) {
+  } else if (secondPlayer.pos > ball.pos + 8) {
     handleMove(secondPlayer, 'ArrowUp');
   }
 }
