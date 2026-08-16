@@ -1,0 +1,23 @@
+body {
+  background-color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+
+  font-family: 'Press Start 2P', system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+canvas {
+  border: 2px solid #fff;
+  background-color: #000;
+}
+
+.title {
+  color: #deb887;
+  font-size: 52px;
+}
