@@ -23,8 +23,8 @@ const gameState = {
   ball: {
     x: midWidthPlayground,
     y: midHeightPlayground,
-    dx: 7,
-    dy: -7,
+    dx: 6,
+    dy: 6,
     pos: midHeightPlayground,
     color: BALL_COLOR,
   },
@@ -64,6 +64,10 @@ function handleMove(player, move) {
   player.pos = player.y + BRICK_WIDTH / 2;
 }
 
+function rand(min, max) {
+  return Math.floor(Math.random() * max) + min;
+}
+
 function ballMove() {
   if (gameState.played) {
     //пропустили м'яч
@@ -83,7 +87,7 @@ function ballMove() {
       (ball.x + ball.dx + BALL_RADIUS > secondPlayer.x) &
       ((ball.y >= secondPlayer.y) & (ball.y <= secondPlayer.y + BRICK_WIDTH))
     ) {
-      ball.dx = -ball.dx;
+      impactHandle(secondPlayer);
     }
 
     //відбиває ігрок
@@ -91,7 +95,7 @@ function ballMove() {
       (ball.x + ball.dx - BALL_RADIUS < firstPlayer.x + BRICK_THICKNESS) &
       ((ball.y >= firstPlayer.y) & (ball.y <= firstPlayer.y + BRICK_WIDTH))
     ) {
-      ball.dx = -ball.dx;
+      impactHandle(firstPlayer);
     }
 
     // верх та низ майданчика
@@ -100,12 +104,20 @@ function ballMove() {
       ball.y + ball.dy < BALL_RADIUS
     ) {
       ball.dy = -ball.dy;
+      ball.dx += (Math.random() - 0.5) * 4;
     }
 
     ball.x += ball.dx;
     ball.y += ball.dy;
     ball.pos = ball.y + BALL_RADIUS;
   }
+}
+
+function impactHandle(player) {
+  const hitPos = (ball.y - player.y) / BRICK_WIDTH;
+  ball.dx = -ball.dx;
+  ball.dy += (Math.random() - 0.5) * 4;
+  ball.dy = (hitPos - 0.5) * 12;
 }
 
 function win(player) {
