@@ -5,7 +5,7 @@ const BALL_RADIUS = BALL_SIZE / 2;
 const BRICK_COLOR = '#deb887';
 const BRICK_THICKNESS = 25;
 const BRICK_WIDTH = 120;
-const BRICK_SPEED = 20;
+const BRICK_SPEED = 8;
 const WIN_SCORE = 10;
 const TWO_PI = Math.PI * 2;
 
@@ -23,11 +23,10 @@ const gameState = {
   ball: {
     x: midWidthPlayground,
     y: midHeightPlayground,
-    dx: 5,
-    dy: -5,
+    dx: 7,
+    dy: -7,
     pos: midHeightPlayground,
     color: BALL_COLOR,
-    speed: 2,
   },
   players: {
     firstPlayer: {
@@ -67,27 +66,62 @@ function handleMove(player, move) {
 
 function ballMove() {
   if (gameState.played) {
+    let win = false;
+
+    //пропустили м'яч
     if (
       ball.x + ball.dx > canvas.width - BALL_RADIUS ||
       ball.x + ball.dx < BALL_RADIUS
     ) {
-      ball.dx = -ball.dx;
-      // win
+      if (ball.x + ball.dx < BALL_RADIUS) {
+        secondPlayer.score++;
+      } else {
+        firstPlayer.score++;
+      }
+      win = true;
     }
+
+    //відбиваєAI
+    if (
+      (ball.x + ball.dx + BALL_RADIUS > secondPlayer.x) &
+      ((ball.y >= secondPlayer.y) & (ball.y <= secondPlayer.y + BRICK_WIDTH))
+    ) {
+      ball.dx = -ball.dx;
+    }
+
+    //відбиває ігрок
+    if (
+      (ball.x + ball.dx - BALL_RADIUS < firstPlayer.x + BRICK_THICKNESS) &
+      ((ball.y >= firstPlayer.y) & (ball.y <= firstPlayer.y + BRICK_WIDTH))
+    ) {
+      ball.dx = -ball.dx;
+    }
+
+    // верх та низ майданчика
     if (
       ball.y + ball.dy > canvas.height - BALL_RADIUS ||
       ball.y + ball.dy < BALL_RADIUS
     ) {
       ball.dy = -ball.dy;
-      //верх, низ
     }
 
-    ball.x += ball.dx;
-    ball.y += ball.dy;
+    if (win) {
+      ball.x = midWidthPlayground;
+      ball.y = midHeightPlayground;
+      gameState.played = false;
+    } else {
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+      ball.pos = ball.y + BALL_RADIUS;
+    }
   }
 }
 
 function aiMove() {
+  if (!gameState.played) {
+    return;
+  }
+
   if (secondPlayer.pos < ball.pos) {
     handleMove(secondPlayer, 'ArrowDown');
   } else if (secondPlayer.pos > ball.pos) {
@@ -157,15 +191,19 @@ function drawBall() {
 }
 
 function gameLoop() {
+  if (!gameState.played & keys['Space']) {
+    gameState.played = true;
+  }
+
   update();
   draw();
   requestAnimationFrame(gameLoop);
 }
 
-gameState.played = true;
+gameState.played = false;
 
-document.addEventListener('keydown', e => (keys[e.key] = true));
-document.addEventListener('keyup', e => (keys[e.key] = false));
+document.addEventListener('keydown', e => (keys[e.code] = true));
+document.addEventListener('keyup', e => (keys[e.code] = false));
 
 requestAnimationFrame(gameLoop);
 
