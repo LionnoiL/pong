@@ -7,7 +7,8 @@ const WIN_SCORE = 10;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const midPlayground = canvas.width / 2;
+const midWidthPlayground = canvas.width / 2;
+const midHeightPlayground = canvas.height / 2;
 
 const keys = {};
 
@@ -15,12 +16,12 @@ const gameState = {
   players: {
     firstPlayer: {
       score: 0,
-      pos: 0,
+      pos: midHeightPlayground - BRICK_WIDTH / 2,
       color: BRICK_COLOR,
     },
     secondPlayer: {
       score: 0,
-      pos: 200,
+      pos: midHeightPlayground - BRICK_WIDTH / 2,
       color: BRICK_COLOR,
     },
   },
@@ -67,7 +68,7 @@ function drawPlayGround() {
 
   const lineWidth = canvas.height / 15;
   for (let i = 0; i < 15; i++) {
-    ctx.fillRect(midPlayground - 4, i * lineWidth + 5, 8, lineWidth - 10);
+    ctx.fillRect(midWidthPlayground - 4, i * lineWidth + 5, 8, lineWidth - 10);
   }
 }
 
@@ -82,7 +83,7 @@ function drawScore() {
   const metrics = ctx.measureText(scoreTxt);
   const leftOffset = metrics.width / 2;
 
-  ctx.fillText(scoreTxt, midPlayground - leftOffset, 30);
+  ctx.fillText(scoreTxt, midWidthPlayground - leftOffset, 30);
 }
 
 function drawBriks() {
