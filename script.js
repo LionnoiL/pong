@@ -66,22 +66,19 @@ function handleMove(player, move) {
 
 function ballMove() {
   if (gameState.played) {
-    let win = false;
-
     //пропустили м'яч
     if (
       ball.x + ball.dx > canvas.width - BALL_RADIUS ||
       ball.x + ball.dx < BALL_RADIUS
     ) {
       if (ball.x + ball.dx < BALL_RADIUS) {
-        secondPlayer.score++;
+        win(secondPlayer);
       } else {
-        firstPlayer.score++;
+        win(firstPlayer);
       }
-      win = true;
     }
 
-    //відбиваєAI
+    //відбиває AI
     if (
       (ball.x + ball.dx + BALL_RADIUS > secondPlayer.x) &
       ((ball.y >= secondPlayer.y) & (ball.y <= secondPlayer.y + BRICK_WIDTH))
@@ -105,16 +102,18 @@ function ballMove() {
       ball.dy = -ball.dy;
     }
 
-    if (win) {
-      ball.x = midWidthPlayground;
-      ball.y = midHeightPlayground;
-      gameState.played = false;
-    } else {
-      ball.x += ball.dx;
-      ball.y += ball.dy;
-      ball.pos = ball.y + BALL_RADIUS;
-    }
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+    ball.pos = ball.y + BALL_RADIUS;
   }
+}
+
+function win(player) {
+  player.score++;
+  ball.x = midWidthPlayground;
+  ball.y = midHeightPlayground;
+  ball.pos = ball.y + BALL_RADIUS;
+  gameState.played = false;
 }
 
 function aiMove() {
