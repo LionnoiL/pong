@@ -1,9 +1,12 @@
 const BORDER_COLOR = '#fff';
+const BALL_COLOR = '#fff';
+const BALL_SIZE = 14;
 const BRICK_COLOR = '#deb887';
 const BRICK_THICKNESS = 25;
 const BRICK_WIDTH = 120;
 const BRICK_SPEED = 20;
 const WIN_SCORE = 10;
+const TWO_PI = Math.PI * 2;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -15,35 +18,56 @@ const brickStartPos = midHeightPlayground - BRICK_WIDTH / 2;
 const keys = {};
 
 const gameState = {
+  ball: {
+    x: midWidthPlayground,
+    y: midHeightPlayground,
+    pos: midHeightPlayground,
+    color: BALL_COLOR,
+    speed: 2,
+  },
   players: {
     firstPlayer: {
       score: 0,
-      pos: brickStartPos,
+      x: 0,
+      y: brickStartPos,
+      pos: midHeightPlayground,
       color: BRICK_COLOR,
     },
     secondPlayer: {
       score: 0,
-      pos: brickStartPos,
+      x: canvas.width - BRICK_THICKNESS,
+      y: brickStartPos,
+      pos: midHeightPlayground,
       color: BRICK_COLOR,
     },
   },
 };
 
 const {
+  ball,
   players: { firstPlayer },
   players: { secondPlayer },
 } = gameState;
 
 function handleMove(player, move) {
   if (move === 'ArrowUp') {
-    const newPos = player.pos - BRICK_SPEED;
-    player.pos = newPos < 0 ? 0 : newPos;
+    const newY = player.y - BRICK_SPEED;
+    player.y = newY < 0 ? 0 : newY;
   } else if (move === 'ArrowDown') {
-    const newPos = player.pos + BRICK_SPEED;
-    player.pos =
-      newPos > canvas.height - BRICK_WIDTH
-        ? canvas.height - BRICK_WIDTH
-        : newPos;
+    const newY = player.y + BRICK_SPEED;
+    player.y =
+      newY > canvas.height - BRICK_WIDTH ? canvas.height - BRICK_WIDTH : newY;
+  }
+  player.pos = player.y + BRICK_WIDTH / 2;
+}
+
+function ballMove() {}
+
+function aiMove() {
+  if (secondPlayer.pos < ball.pos) {
+    handleMove(secondPlayer, 'ArrowDown');
+  } else if (secondPlayer.pos > ball.pos) {
+    handleMove(secondPlayer, 'ArrowUp');
   }
 }
 
@@ -55,6 +79,9 @@ function update() {
   if (keys['ArrowDown']) {
     handleMove(firstPlayer, 'ArrowDown');
   }
+
+  ballMove();
+  aiMove();
 }
 
 function draw() {
@@ -63,6 +90,7 @@ function draw() {
   drawPlayGround();
   drawScore();
   drawBriks();
+  drawBall();
 }
 
 function drawPlayGround() {
@@ -90,15 +118,17 @@ function drawScore() {
 
 function drawBriks() {
   ctx.fillStyle = firstPlayer.color;
-  ctx.fillRect(0, firstPlayer.pos, BRICK_THICKNESS, BRICK_WIDTH);
+  ctx.fillRect(firstPlayer.x, firstPlayer.y, BRICK_THICKNESS, BRICK_WIDTH);
 
   ctx.fillStyle = secondPlayer.color;
-  ctx.fillRect(
-    canvas.width - BRICK_THICKNESS,
-    secondPlayer.pos,
-    BRICK_THICKNESS,
-    BRICK_WIDTH
-  );
+  ctx.fillRect(secondPlayer.x, secondPlayer.y, BRICK_THICKNESS, BRICK_WIDTH);
+}
+
+function drawBall() {
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, BALL_SIZE, 0, TWO_PI);
+  ctx.fillStyle = ball.color;
+  ctx.fill();
 }
 
 function gameLoop() {
