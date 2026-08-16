@@ -6,9 +6,7 @@ const WIN_SCORE = 10;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-
 const permittedMoves = ['ArrowDown', 'ArrowUp'];
-document.addEventListener('keydown', eventKeyDown);
 
 const gameState = {
   players: {
@@ -38,16 +36,14 @@ function eventKeyDown(event) {
 
 function handleMove(player, move) {
   if (move === 'ArrowUp') {
-    player.pos -= BRICK_SPEED;
-    if (player.pos < 0) {
-      player.pos = 0;
-    }
+    const newPos = player.pos - BRICK_SPEED;
+    player.pos = newPos < 0 ? 0 : newPos;
   } else if (move === 'ArrowDown') {
-    player.pos += BRICK_SPEED;
-
-    if (player.pos > canvas.height - BRICK_WIDTH) {
-      player.pos = canvas.height - BRICK_WIDTH;
-    }
+    const newPos = player.pos + BRICK_SPEED;
+    player.pos =
+      newPos > canvas.height - BRICK_WIDTH
+        ? canvas.height - BRICK_WIDTH
+        : newPos;
   }
 }
 
@@ -74,11 +70,6 @@ function drawScore() {
 }
 
 function drawBriks() {
-  const {
-    players: { firstPlayer },
-    players: { secondPlayer },
-  } = gameState;
-
   ctx.fillStyle = firstPlayer.color;
   ctx.fillRect(0, firstPlayer.pos, BRICK_THICKNESS, BRICK_WIDTH);
 
@@ -96,6 +87,8 @@ function gameLoop() {
   draw();
   requestAnimationFrame(gameLoop);
 }
+
+document.addEventListener('keydown', eventKeyDown);
 
 requestAnimationFrame(gameLoop);
 
