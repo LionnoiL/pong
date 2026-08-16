@@ -1,12 +1,13 @@
 const BRICK_COLOR = '#deb887';
 const BRICK_THICKNESS = 25;
 const BRICK_WIDTH = 120;
-const BRICK_SPEED = 30;
+const BRICK_SPEED = 20;
 const WIN_SCORE = 10;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const permittedMoves = ['ArrowDown', 'ArrowUp'];
+
+const keys = {};
 
 const gameState = {
   players: {
@@ -28,12 +29,6 @@ const {
   players: { secondPlayer },
 } = gameState;
 
-function eventKeyDown(event) {
-  if (permittedMoves.includes(event.key)) {
-    handleMove(firstPlayer, event.key);
-  }
-}
-
 function handleMove(player, move) {
   if (move === 'ArrowUp') {
     const newPos = player.pos - BRICK_SPEED;
@@ -47,7 +42,15 @@ function handleMove(player, move) {
   }
 }
 
-function update() {}
+function update() {
+  if (keys['ArrowUp']) {
+    handleMove(firstPlayer, 'ArrowUp');
+  }
+
+  if (keys['ArrowDown']) {
+    handleMove(firstPlayer, 'ArrowDown');
+  }
+}
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -88,7 +91,8 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-document.addEventListener('keydown', eventKeyDown);
+document.addEventListener('keydown', e => (keys[e.key] = true));
+document.addEventListener('keyup', e => (keys[e.key] = false));
 
 requestAnimationFrame(gameLoop);
 
