@@ -7,8 +7,10 @@ const WIN_SCORE = 10;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+
 const midWidthPlayground = canvas.width / 2;
 const midHeightPlayground = canvas.height / 2;
+const brickStartPos = midHeightPlayground - BRICK_WIDTH / 2;
 
 const keys = {};
 
@@ -16,12 +18,12 @@ const gameState = {
   players: {
     firstPlayer: {
       score: 0,
-      pos: midHeightPlayground - BRICK_WIDTH / 2,
+      pos: brickStartPos,
       color: BRICK_COLOR,
     },
     secondPlayer: {
       score: 0,
-      pos: midHeightPlayground - BRICK_WIDTH / 2,
+      pos: brickStartPos,
       color: BRICK_COLOR,
     },
   },
