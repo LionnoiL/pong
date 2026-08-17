@@ -1,4 +1,5 @@
 const BORDER_COLOR = '#fff';
+const MESSAGE_WIN_COLOR = '#a30707';
 const BALL_COLOR = '#fff';
 const BALL_SIZE = 14;
 const BALL_RADIUS = BALL_SIZE / 2;
@@ -19,6 +20,7 @@ const midHeightPlayground = canvas.height / 2;
 const brickStartPos = midHeightPlayground - BRICK_WIDTH / 2;
 
 const keys = {};
+let currentMessage = '';
 
 const gameState = {
   played: false,
@@ -38,6 +40,7 @@ const gameState = {
       y: brickStartPos,
       pos: midHeightPlayground,
       color: BRICK_COLOR,
+      name: 'Player',
     },
     secondPlayer: {
       score: 0,
@@ -45,6 +48,7 @@ const gameState = {
       y: brickStartPos,
       pos: midHeightPlayground,
       color: BRICK_COLOR,
+      name: 'AI',
     },
   },
 };
@@ -131,6 +135,27 @@ function win(player) {
   ball.dx = BALL_START_SPEED;
   ball.dy = BALL_START_SPEED;
   gameState.played = false;
+
+  if (player.score === WIN_SCORE) {
+    currentMessage = `${player.name} WIN!`;
+    firstPlayer.score = 0;
+    secondPlayer.score = 0;
+  }
+}
+
+function message(text) {
+  ctx.fillStyle = MESSAGE_WIN_COLOR;
+  ctx.font = '60px "Press Start 2P", monospace';
+  ctx.textBaseline = 'top';
+
+  const metrics = ctx.measureText(text);
+  const leftOffset = metrics.width / 2;
+
+  ctx.fillText(
+    text,
+    midWidthPlayground - leftOffset,
+    midHeightPlayground - 100
+  );
 }
 
 function aiMove() {
@@ -193,6 +218,7 @@ function drawPlayGround() {
 function drawScore() {
   ctx.fillStyle = BRICK_COLOR;
   ctx.textBaseline = 'top';
+  ctx.font = '40px "Press Start 2P", monospace';
 
   const firstPlayerScore = String(firstPlayer.score).padStart(2, '0');
   const secondPlayerScore = String(secondPlayer.score).padStart(2, '0');
@@ -228,6 +254,11 @@ function gameLoop() {
 
   update();
   draw();
+
+  if (currentMessage) {
+    message(currentMessage);
+  }
+
   requestAnimationFrame(gameLoop);
 }
 
