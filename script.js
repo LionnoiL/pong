@@ -2,6 +2,8 @@ const BORDER_COLOR = '#fff';
 const BALL_COLOR = '#fff';
 const BALL_SIZE = 14;
 const BALL_RADIUS = BALL_SIZE / 2;
+const BALL_START_SPEED = 6;
+const BALL_SPEED_INCR = 1.2;
 const BRICK_COLOR = '#deb887';
 const BRICK_THICKNESS = 25;
 const BRICK_WIDTH = 120;
@@ -20,11 +22,12 @@ const keys = {};
 
 const gameState = {
   played: false,
+  time: 0,
   ball: {
     x: midWidthPlayground,
     y: midHeightPlayground,
-    dx: 6,
-    dy: 6,
+    dx: BALL_START_SPEED,
+    dy: BALL_START_SPEED,
     pos: midHeightPlayground,
     color: BALL_COLOR,
   },
@@ -125,6 +128,8 @@ function win(player) {
   ball.x = midWidthPlayground;
   ball.y = midHeightPlayground;
   ball.pos = ball.y + BALL_RADIUS;
+  ball.dx = BALL_START_SPEED;
+  ball.dy = BALL_START_SPEED;
   gameState.played = false;
 }
 
@@ -151,6 +156,20 @@ function update() {
 
   ballMove();
   aiMove();
+
+  if (gameState.played) {
+    const diffMs = Date.now() - gameState.time;
+    const diffSec = Math.floor(diffMs / 1000);
+
+    if (diffSec > 10) {
+      gameState.time = Date.now();
+
+      ball.dx = ball.dx * BALL_SPEED_INCR;
+      ball.dy = ball.dy * BALL_SPEED_INCR;
+    }
+  } else {
+    gameState.time = Date.now();
+  }
 }
 
 function draw() {
@@ -204,6 +223,7 @@ function drawBall() {
 function gameLoop() {
   if (!gameState.played & keys['Space']) {
     gameState.played = true;
+    gameState.time = Date.now();
   }
 
   update();
